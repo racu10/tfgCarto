@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[36]:
+# In[1]:
 
 #Useful functions @racu10
 
@@ -17,12 +17,16 @@ import geopy.distance
 import time
 import unicodedata
 
+import sys;
+reload(sys);
+sys.setdefaultencoding("utf8")
+
 MyApi = OsmApi()
 apiOverPass = overpass.API()
 apiOverPy =  overpy.Overpass()
 
 
-# In[37]:
+# In[2]:
 
 def getDistance(long1, lat1, long2, lat2):
     """    getDistance(long1, lat1, long2, lat2)
@@ -52,7 +56,7 @@ def getDistance(long1, lat1, long2, lat2):
     return 2*r*math.asin(math.sqrt(math.sin(c*(lat2-lat1)/2)**2 + math.cos(c*lat1)*math.cos(c*lat2)*math.sin(c*(long2-long1)/2)**2))
 
 
-# In[38]:
+# In[3]:
 
 def getDistanceInKm(long1, lat1, long2, lat2):
     """    getDistanceInKm(long1, lat1, long2, lat2)
@@ -82,7 +86,7 @@ def getDistanceInKm(long1, lat1, long2, lat2):
  
 
 
-# In[39]:
+# In[4]:
 
 def utmToLatLng(zone, easting, northing, northernHemisphere=True):
 
@@ -163,7 +167,7 @@ def utmToLatLng(zone, easting, northing, northernHemisphere=True):
     return (latitude, longitude)
 
 
-# In[40]:
+# In[5]:
 
 def getDataOfCsv(name, sep=';'):
     import pandas as pd
@@ -191,7 +195,7 @@ def getDataOfCsv(name, sep=';'):
     return allData
 
 
-# In[41]:
+# In[6]:
 
 def is_number(s):
     try:
@@ -209,7 +213,7 @@ def is_number(s):
     return False
 
 
-# In[42]:
+# In[7]:
 
 def getPointOfStreet(streetName, boundingBoxSearch): 
     """    getPointOfStreet(streetName, boundingBoxSearch)
@@ -234,7 +238,7 @@ def getPointOfStreet(streetName, boundingBoxSearch):
     return apiOverPass.Get(sql)
 
 
-# In[43]:
+# In[8]:
 
 def getPointOfStreetPolygon(streetName, polygon): 
     """    getPointOfStreet(streetName, boundingBoxSearch)
@@ -260,9 +264,66 @@ def getPointOfStreetPolygon(streetName, polygon):
     return apiOverPass.Get(sql)
 
 
-# In[44]:
+# In[9]:
 
-def fromPointsOfStretGetBestUbicationMinXY(pointsOfStreet, xtest, ytest):
+def getAllStreetPointsLookingForName(allStreetInfoOSM, streetName):
+    lstPoints = []
+    for street in allStreetInfoOSM:
+        if street['type'].strip().lower() == 'linestring':
+            if streetName.strip().lower() in street['properties'][u'name'].strip().lower():
+                if len(street['geometry']) > 0:
+                    for point in street['geometry']:
+                        if point not in lstPoints:
+                            lstPoints.append(point)   
+    return lstPoints
+
+
+# In[10]:
+
+def fromAllStreetsGetWithStreetNameTheLocationMostNear(allStreetInfoOSM, streetName, xtest, ytest):
+    lstPoints = getAllStreetPointsLookingForName(allStreetInfoOSM, streetName)
+    
+    return fromPointsOfStretGetBestUbicationXY(lstPoints, xtest, ytest)
+
+
+# In[11]:
+
+def fromPointsOfStretGetBestUbicationXY(pointsOfStreet, xtest, ytest):
+    """    fromPointsOfStretGetBestUbicationMinXY(pointsOfStreet, xtest, ytest):
+
+    Localize the point more close to the street given with his points using OSM features.
+    
+    Parameters
+    ----------
+    pointsOfStreet : List
+           List of points
+    xtest : float 
+            Actual x coordinate to be remplaced.
+    ytest : tuple 
+            Actual y coordinate to be remplaced.
+            
+    Returns
+    -------
+    tuple x, y
+    Get the best location into the street given.
+    """
+    cx = xtest
+    cy = ytest
+    minD = float('inf')
+    for c in pointsOfStreet:
+        y = c[1]
+        x = c[0]
+        d = getDistance(xtest, ytest, x, y)
+        if d < minD:  
+            cx = x
+            cy = y 
+            minD = d
+    return cx,cy
+
+
+# In[12]:
+
+def fromPointsOfStretGetBestUbicationMinXYOSMStructure(pointsOfStreet, xtest, ytest):
     """    fromPointsOfStretGetBestUbicationMinXY(pointsOfStreet, xtest, ytest):
 
     Localize the point more close to the street given with his points using OSM features.
@@ -270,7 +331,7 @@ def fromPointsOfStretGetBestUbicationMinXY(pointsOfStreet, xtest, ytest):
     Parameters
     ----------
     pointsOfStreet : float
-        Name of the street you are looking the points.
+        OSM structure with linestring.
     xtest : float 
             Actual x coordinate to be remplaced.
     ytest : tuple 
@@ -308,7 +369,7 @@ def fromPointsOfStretGetBestUbicationMinXY(pointsOfStreet, xtest, ytest):
     return cx,cy
 
 
-# In[45]:
+# In[13]:
 
 def pandasReadJson(url):
     """    pandasReadJson(url):
@@ -330,7 +391,7 @@ def pandasReadJson(url):
     return pd.read_json(url)
 
 
-# In[46]:
+# In[14]:
 
 def getNowBikesInBcn():
     """    getNowBikesInBcn():
@@ -351,7 +412,7 @@ def getNowBikesInBcn():
     return df
 
 
-# In[47]:
+# In[15]:
 
 def decodeToUTF8(text):
     try:
@@ -361,7 +422,7 @@ def decodeToUTF8(text):
     return text
 
 
-# In[48]:
+# In[16]:
 
 def getAllBarrisBCNPoligonBox(path = 'alldata/barris.geojson', columnName='neighbourhood', orderedXY = False):
     """    getAllBarrisBCNPoligonBox(path)
@@ -399,7 +460,7 @@ def getAllBarrisBCNPoligonBox(path = 'alldata/barris.geojson', columnName='neigh
             
 
 
-# In[49]:
+# In[17]:
 
 def polygonArrayToOSMstructure(polygon):
     """    polygonArrayToOSMstructure(polygon)
@@ -424,7 +485,7 @@ def polygonArrayToOSMstructure(polygon):
     return s
 
 
-# In[50]:
+# In[18]:
 
 def getAllNodesIntoPolygon(polygon, timeOut = 30):
     """    getAllNodesIntoPolygon(polygon)
@@ -453,7 +514,7 @@ def getAllNodesIntoPolygon(polygon, timeOut = 30):
     return allData
 
 
-# In[51]:
+# In[19]:
 
 def getAllNodesIntoBoundingBox(boundingBoxSearch, timeOut = 30):
     """    getAllNodesIntoPolygon(polygon)
@@ -481,7 +542,7 @@ def getAllNodesIntoBoundingBox(boundingBoxSearch, timeOut = 30):
     return allData
 
 
-# In[52]:
+# In[20]:
 
 def getAllNodesIntoPolygonErrorTimeOut(sql, wait):
     allData = []
@@ -497,7 +558,7 @@ def getAllNodesIntoPolygonErrorTimeOut(sql, wait):
     return allData
 
 
-# In[53]:
+# In[21]:
 
 def getAmenityInfoIntoPolygon(polygon, amenityType='pub', timeOutWaitExcept = 30):
     #http://wiki.openstreetmap.org/wiki/Key:amenity
@@ -512,7 +573,7 @@ def getAmenityInfoIntoPolygon(polygon, amenityType='pub', timeOutWaitExcept = 30
     return allData
 
 
-# In[54]:
+# In[22]:
 
 def getAmenityInfoIntoBoundingBox(boundingBoxSearch, amenityType='pub', timeOutWaitExcept = 30):
     #http://wiki.openstreetmap.org/wiki/Key:amenity
@@ -525,7 +586,7 @@ def getAmenityInfoIntoBoundingBox(boundingBoxSearch, amenityType='pub', timeOutW
     return allData
 
 
-# In[55]:
+# In[23]:
 
 def getNodeInfo(idNode):
     osm = OsmApi()
@@ -533,7 +594,7 @@ def getNodeInfo(idNode):
     return T
 
 
-# In[56]:
+# In[24]:
 
 def getInfoOfOSMSearch(feature):
     feat = feature["features"]
@@ -559,7 +620,7 @@ def getInfoOfOSMSearch(feature):
     
 
 
-# In[57]:
+# In[25]:
 
 def coordInsidePolygon(x, y, polygon):
     """    coordInsidePolygon(x, y, polygon)
@@ -598,7 +659,7 @@ def coordInsidePolygon(x, y, polygon):
     return inside
 
 
-# In[58]:
+# In[26]:
 
 def getPerimeterOfDictWithPolygons(dictionary):
     arrPoly = []
@@ -635,7 +696,7 @@ def getPerimeterOfDictWithPolygons(dictionary):
 
 
 
-# In[59]:
+# In[27]:
 
 def transformArrYXToXY(arrYX):
     points = []
@@ -651,7 +712,7 @@ def transformArrYXToXYList(arrYX):
 
 
 
-# In[60]:
+# In[28]:
 
 def removeIntInxString(txt, sep = '.'):
     s = txt.split(sep)
@@ -665,27 +726,27 @@ def removeIntInxString(txt, sep = '.'):
         return txt.strip()
 
 
-# In[61]:
+# In[29]:
 
 def mapCreation(centerX, centerY):
     map = folium.Map(location=[centerX,centerY])
     return map
 
 
-# In[62]:
+# In[30]:
 
 def mapAddMarker(map, coordX, coordY, icn = 'glyphicon-certificate', color = 'blue', popuName = ''):
     folium.Marker([coordX, coordY], popup=popuName,
                    icon = folium.Icon(icon=icn,color = color)).add_to(map)
 
 
-# In[63]:
+# In[31]:
 
 def mapAddLine(map, arrPoints, lineColor="#000000",weight=2.5, opacity=1):
     folium.PolyLine(arrPoints, color=lineColor, weight=weight, opacity=opacity).add_to(map)
 
 
-# In[64]:
+# In[32]:
 
 def mapWithMarkerCluster(map, name):
     markerCluster = folium.MarkerCluster(name).add_to(map)
@@ -696,25 +757,20 @@ def mapAddMarkerToCluster(cluster, coordX, coordY, icn = 'glyphicon-certificate'
     folium.Marker([coordX,coordY], icon=folium.Icon(icon=icn, color=iconcolor),popup = poppin).add_to(cluster)
 
 
-# In[65]:
+# In[33]:
 
 def mapAddRegularPolygonMarker(map, points, color = '#0000FF', txtOfPoppup = "", sizeX = 200, sizeY = 50):
     poppin = folium.Popup(html=folium.element.IFrame(html=txtOfPoppup,width=sizeX,height=sizeY))
     folium.RegularPolygonMarker(points, weight=2.5, opacity=1, fill_color=color, fill_opacity=1, popup=poppin).add_to(map)
 
 
-# In[66]:
+# In[34]:
 
 def saveMap(map, saveFileName = 'map.html'):
     map.save(saveFileName)
 
 
-# In[ ]:
-
-
-
-
-# In[67]:
+# In[35]:
 
 #POLYGON
 #POINTS x, y o UTMX UTMY or Ids
@@ -731,7 +787,13 @@ def saveMap(map, saveFileName = 'map.html'):
 
 
 
-def transformPandasToStructureInfo(pd, type = 'point', colPolygonOrX = 0, colY = 0, ifIsPolygonIsXY = True, isUTM = False, zoneUTM = 31):
+def transformPandasToStructureInfo(pd, 
+                                   type = 'point', 
+                                   colPolygonOrX = 0, 
+                                   colY = 0, 
+                                   ifIsPolygonIsXY = True, 
+                                   isUTM = False, 
+                                   zoneUTM = 31):
     lst = []    
     for d in pd[:].iterrows():
         if d[1][1] != -1:           
@@ -764,7 +826,16 @@ def transformPandasToStructureInfo(pd, type = 'point', colPolygonOrX = 0, colY =
     return lst
 
     
-def getDatabase(name, extension, path = "" , sep = "", isPolygon = False, colPolygonOrLong = 0, colLat = 1, columnName = '',  ifIsPolygonIsXY = True, isUTM = False, zoneUTM = 31):
+def getDatabase(name, 
+                extension, 
+                path = "" , 
+                sep = "", 
+                isPolygon = False, 
+                colPolygonOrLong = 0, 
+                colLat = 1, columnName = '', 
+                ifIsPolygonIsXY = True, 
+                isUTM = False, 
+                zoneUTM = 31):
     allData = []
     name = name.strip().lower()
     if extension.strip().lower() == 'csv':
@@ -783,27 +854,47 @@ def getDatabase(name, extension, path = "" , sep = "", isPolygon = False, colPol
         return [name, getAllBarrisBCNPoligonBox(path, columnName, True)]
     elif extension.strip().lower() == 'bcnbikes':        
         return [name, transformPandasToStructureInfo(getNowBikesInBcn(), 'point', 'lng', 'lat', True, True, 31)]
+    elif extension.strip().lower() == 'df' or  extension.strip().lower() == 'pandas':
+        if isPolygon == False:
+            return [name, transformPandasToStructureInfo(path, 'point', colPolygonOrLong, colLat, ifIsPolygonIsXY, isUTM,zoneUTM)]
+        else:
+            return [name, transformPandasToStructureInfo(path, 'polygon', colPolygonOrLong, colLat, ifIsPolygonIsXY, isUTM,zoneUTM)]
+
     return allData
 
 
 
-# In[68]:
+# In[36]:
 
-def getDatabaseFromOSM(name, type = 'amenity|node|way', searchByPolygon = True, boundingBoxOrPolygon = [], keyWord = 'restaurant', timeOutWait = 30):
+def getDatabaseFromOSM(name, 
+                       type = 'amenity|node|way', 
+                       searchByPolygon = True, 
+                       ifIsPolygonIsXY = True, 
+                       boundingBoxOrPolygon = [], 
+                       keyWord = '', 
+                       timeOutWait = 30):
+    
+    if searchByPolygon == True and ifIsPolygonIsXY == True:
+        boundingBoxOrPolygon = transformArrYXToXYList(boundingBoxOrPolygon)
     
     allData = []
     name = name.strip().lower()
     if type.strip().lower() == 'amenity':
         if searchByPolygon == True:
-            return getInfoOfOSMSearch(getAmenityInfoIntoPolygon(transformArrYXToXYList(boundingBoxOrPolygon), keyWord, timeOutWait))
+            return getInfoOfOSMSearch(getAmenityInfoIntoPolygon(boundingBoxOrPolygon, keyWord, timeOutWait))
         else:
             return getInfoOfOSMSearch(getAmenityInfoIntoBoundingBox(boundingBoxOrPolygon, keyWord, timeOutWait))
     elif type.strip().lower() == 'node':
         if searchByPolygon == True:
-            return getInfoOfOSMSearch(getAllNodesIntoPolygon(transformArrYXToXYList(boundingBoxOrPolygon), timeOutWait))
+            return getInfoOfOSMSearch(getAllNodesIntoPolygon(boundingBoxOrPolygon, timeOutWait))
         else:
             return getInfoOfOSMSearch(getAllNodesIntoBoundingBox(boundingBoxOrPolygon, timeOutWait))
-        
+    elif type.strip().lower() == 'way':
+        if searchByPolygon == True:
+            return getInfoOfOSMSearch(getPointOfStreetPolygon(keyWord, boundingBoxOrPolygon))
+        else:
+            return getInfoOfOSMSearch(getPointOfStreet(keyWord, boundingBoxOrPolygon))
+            
 
 
 # In[ ]:
