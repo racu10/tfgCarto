@@ -5,7 +5,7 @@
 #################################################################################
 
 BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
-PROJECT_NAME = emaps
+PROJECT_NAME = emapy
 PYTHON_INTERPRETER = python
 IS_ANACONDA=$(shell python -c "import sys;t=str('anaconda' in sys.version.lower() or 'continuum' in sys.version.lower());sys.stdout.write(t)")
 

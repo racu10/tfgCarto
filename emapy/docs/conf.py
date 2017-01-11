@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# emaps documentation build configuration file, created by
+# emapy documentation build configuration file, created by
 # sphinx-quickstart.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -41,7 +41,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'emaps'
+project = u'emapy'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -164,7 +164,7 @@ html_static_path = ['_static']
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'emapsdoc'
+htmlhelp_basename = 'emapydoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -184,9 +184,9 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
     ('index',
-     'emaps.tex',
-     u'emaps Documentation',
-     u"[A[A[B[B[B[BRaul Torne Alonso (racu10)", 'manual'),
+     'emapy.tex',
+     u'emapy Documentation',
+     u"Raul Torne Alonso (racu10) ", 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -215,8 +215,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'emaps', u'emaps Documentation',
-     [u"[A[A[B[B[B[BRaul Torne Alonso (racu10)"], 1)
+    ('index', 'emapy', u'emapy Documentation',
+     [u"Raul Torne Alonso (racu10) "], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -229,9 +229,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'emaps', u'emaps Documentation',
-     u"[A[A[B[B[B[BRaul Torne Alonso (racu10)", 'emaps',
-     'Create easy maps and make your own easy maps for a better analisys[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[C[C[C[C[3~[3~[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C.', 'Miscellaneous'),
+    ('index', 'emapy', u'emapy Documentation',
+     u"Raul Torne Alonso (racu10) ", 'emapy',
+     'Create and analyze your maps easier and fast.', 'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
